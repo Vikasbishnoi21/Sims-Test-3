@@ -1671,9 +1671,8 @@ function renderStats(){
   const avgAnnSimple = annRows.length ? annRows.reduce((s,r)=>s+r.ann,0)/annRows.length : 0;
   const avgAnnWt     = annRows.length ? annRows.reduce((s,r)=>s+r.ann*r.pv,0)/annRows.reduce((s,r)=>s+r.pv,0) : 0;
 
-  // Ann Projected: by position value (projected annual premium $ from each position)
-  const annPremPv  = Math.round(annRows.reduce((s,r)=>s+(r.ann||0)*r.pv,0));
-  // Ann Projected: by premium (annualise the actual collected premium using each position's DTE)
+
+  // Annualized Run-Rate: annualise actual collected premium using each position's DTE
   const annPremPt  = Math.round(rows.filter(r=>r.dte>0&&(r.pt||0)>0).reduce((s,r)=>s+(r.pt||0)*365/r.dte,0));
 
   // OTM%: wt by position value AND by premium
@@ -1696,7 +1695,7 @@ function renderStats(){
 
   // Stash all values for toggle re-render (no recompute needed)
   window._sv = {
-    totalVal, totalPt, annPremPv, annPremPt,
+    totalVal, totalPt, annPremPt,
     avgAnnSimple, avgAnnWt,
     wtOtmPv, wtOtmPt,
     wtBetaPv, wtBetaPt,
@@ -1708,7 +1707,7 @@ function renderStats(){
 }
 
 // Toggle modes — persist across filter changes
-window._tm = window._tm || { ann:'simple', annProj:'pv', otm:'pv', beta:'pv', dte:'pt' };
+window._tm = window._tm || { annProj:'arr', otm:'pv', beta:'pv', dte:'pt' };
 
 function renderAllCards(){
   const v = window._sv || {};
@@ -1716,7 +1715,6 @@ function renderAllCards(){
 
   // ── Row 1: static cards + toggled Avg Ann Return ────────────
   const annVal     = m.ann==='simple' ? (v.avgAnnSimple||0) : (v.avgAnnWt||0);
-  const annProjVal = m.annProj==='pv'  ? v.annPremPv        : v.annPremPt;
 
   const staticCards = [
     { label:'Portfolio Value',  val:'$'+(v.totalVal/1000).toFixed(1)+'k', sub:v.posCount+' positions', a:'--blue',   id:null },
@@ -1724,14 +1722,16 @@ function renderAllCards(){
   ];
 
   const toggleCards = [
-    { id:'annProj', label:'Ann Projected',  a:'--violet',
-      vals:{ pv:'$'+(v.annPremPv||0).toLocaleString(), pt:'$'+(v.annPremPt||0).toLocaleString() },
-      subs:{ pv:'wt by position value',                pt:'wt by premium' },
-      mode: m.annProj, opts:[{k:'pv',l:'Pos Value'},{k:'pt',l:'Premium'}] },
-    { id:'ann',     label:'Avg Ann Return', a:'--cyan',
-      vals:{ simple:((v.avgAnnSimple||0)*100).toFixed(1)+'%', wt:((v.avgAnnWt||0)*100).toFixed(1)+'%' },
-      subs:{ simple:'simple average',                          wt:'wt by position value' },
-      mode: m.ann,    opts:[{k:'simple',l:'Simple'},{k:'wt',l:'Wt Avg'}] },
+    { id:'annProj', label:'Ann Return', a:'--violet',
+      vals:{
+        arr:  '$'+(v.annPremPt||0).toLocaleString(),
+        pct:  ((v.avgAnnWt||0)*100).toFixed(1)+'%'
+      },
+      subs:{
+        arr:  'annualized run-rate',
+        pct:  'avg ann return · wt pos value'
+      },
+      mode: m.annProj, opts:[{k:'arr',l:'Run-Rate $'},{k:'pct',l:'Ann Return %'}] },
     { id:'otm',     label:'Wt Avg OTM%',   a:'--yellow',
       vals:{ pv: v.wtOtmPv!=null?((v.wtOtmPv||0)*100).toFixed(1)+'%':'—',
              pt: v.wtOtmPt!=null?((v.wtOtmPt||0)*100).toFixed(1)+'%':'—' },
@@ -1742,6 +1742,7 @@ function renderAllCards(){
              pt: v.wtBetaPt!=null?(v.wtBetaPt||0).toFixed(2):'—' },
       subs:{ pv:'wt by position value', pt:'wt by premium' },
       mode: m.beta,   opts:[{k:'pv',l:'Pos Value'},{k:'pt',l:'Premium'}] },
+
     { id:'dte',     label:'Avg DTE',        a:'--yellow',
       vals:{ pv: v.wtDtePv!=null?Math.round(v.wtDtePv)+' d':'—',
              pt: v.wtDtePt!=null?Math.round(v.wtDtePt)+' d':'—' },
@@ -1758,7 +1759,12 @@ function renderAllCards(){
         <div class="sc-val">${c.val}</div>
         <div class="sc-sub">${c.sub}</div>
       </div>`),
-    ...toggleCards.map(c=>`
+    ...toggleCards.map(c=>c._static ? `
+      <div class="sc" style="--a:var(${c.a})">
+        <div class="sc-label">${c.label}</div>
+        <div class="sc-val">${c.val}</div>
+        <div class="sc-sub">${c.sub}</div>
+      </div>` : `
       <div class="sc" style="--a:var(${c.a})">
         <div class="sc-label">${c.label}</div>
         <div class="sc-val">${c.vals[c.mode]}</div>
