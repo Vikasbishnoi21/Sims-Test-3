@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Pocket P&L</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -35,9 +35,13 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
 /* EXTRA STATS ROW */
-.stats-extra{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
-.sc-sm{padding:10px 14px!important;min-width:140px;}
-.sc-sm .sc-val{font-size:20px!important;}
+.stats-extra{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+.sc-sm{padding:10px 14px!important;min-width:160px;cursor:default;}
+.sc-sm .sc-val{font-size:22px!important;}
+.sc-toggle{display:flex;gap:4px;margin-top:7px;}
+.sc-toggle-btn{font-size:7px;font-family:var(--fs);font-weight:700;letter-spacing:.3px;padding:2px 8px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;transition:all .15s;white-space:nowrap;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+.sc-toggle-btn.active{background:rgba(255,255,255,.09);color:var(--text);border-color:rgba(255,255,255,.22);}
+.sc-toggle-btn:hover:not(.active){color:var(--muted);border-color:var(--border2);}
 
 /* CHART ROW */
 .chart-row-extra{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
@@ -80,6 +84,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   border-radius:20px;border:1px solid var(--border);
   background:transparent;color:var(--muted);cursor:pointer;
   transition:all .15s;white-space:nowrap;max-width:180px;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
 }
 .sim-tab:hover{border-color:var(--blue);color:var(--blue);background:rgba(45,184,232,.08)}
 .sim-tab.active{border-color:var(--blue);background:rgba(45,184,232,.15);color:var(--blue)}
@@ -93,6 +99,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   padding:5px 12px;font-size:9px;font-family:var(--fs);font-weight:700;
   letter-spacing:.8px;text-transform:uppercase;border-radius:20px;
   cursor:pointer;transition:all .15s;white-space:nowrap;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
 }
 .sim-btn-new{border:1px solid rgba(34,212,122,.35);background:rgba(34,212,122,.08);color:var(--green)}
 .sim-btn-new:hover{background:rgba(34,212,122,.2);border-color:var(--green)}
@@ -187,7 +195,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .chip.ylw-chip:hover,.chip.ylw-chip.active{border-color:var(--yellow);color:var(--yellow);background:rgba(255,228,77,.12);}
 .chip.vlt-chip:hover,.chip.vlt-chip.active{border-color:var(--violet);color:var(--violet);background:rgba(184,120,255,.12);}
 .chip-sep{width:1px;height:20px;background:var(--border2);flex-shrink:0;margin:0 2px}
-.srch{padding:5px 13px;font-size:11px;background:var(--panel);border:1px solid var(--border);border-radius:20px;color:var(--text);outline:none;width:130px;font-family:var(--fm);transition:all .15s}
+.srch{padding:5px 13px;font-size:11px;background:var(--panel);border:1px solid var(--border);border-radius:20px;color:var(--text);outline:none;width:130px;font-family:var(--fm);transition:all .15s;-webkit-appearance:none}
 .srch:focus{border-color:var(--blue);width:155px}
 .srch::placeholder{color:var(--dim)}
 .rc{font-size:9px;font-family:var(--fs);color:var(--dim);white-space:nowrap;margin-left:auto}
@@ -223,7 +231,8 @@ tfoot td:first-child{text-align:left}
 /* MODAL OVERLAY */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:1000;align-items:center;justify-content:center;padding:16px;}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:24px 28px;width:100%;max-width:420px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.6);}
+.modal{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:24px 28px;width:100%;max-width:420px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.6);  -webkit-overflow-scrolling:touch;
+}
 .modal-title{font-family:var(--fs);font-size:16px;font-weight:800;color:var(--text);margin-bottom:18px;letter-spacing:-.5px;}
 .modal-title span{color:var(--green);}
 .modal-close{position:absolute;top:14px;right:16px;font-size:16px;color:var(--dim);cursor:pointer;background:none;border:none;line-height:1;transition:color .15s;}
@@ -270,29 +279,123 @@ tfoot td:first-child{text-align:left}
 /* ── MOBILE ── */
 body{ -webkit-text-size-adjust:100%; }
 button,input{ -webkit-tap-highlight-color: transparent; }
+/* ── Tablet (≤900px) ────────────────────────────────────────── */
 @media (max-width: 900px){
   .app{padding:12px 14px}
   .hdr{flex-direction:column;align-items:flex-start;gap:10px}
-  .hdr-r{width:100%;justify-content:space-between;gap:12px}
+  .hdr-r{width:100%;justify-content:space-between;gap:12px;flex-wrap:wrap}
   .hdr-title{font-size:22px}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .sc{padding:12px 14px}.sc-val{font-size:22px}
-  .charts-top{grid-template-columns:1fr}.charts-bot{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .sc{padding:12px 14px}
+  .sc-val{font-size:22px}
+  .sc-toggle-btn{padding:3px 9px;font-size:7.5px}
+  .charts-top{grid-template-columns:1fr}
+  .charts-bot{grid-template-columns:1fr}
+  .chart-row-extra{grid-template-columns:1fr}
   .cmp-grid-2,.cmp-grid-3{grid-template-columns:1fr}
-  thead th{padding:12px 10px;font-size:10px}
-  tbody td{padding:10px 10px;font-size:12px}
-  .cell-inp{max-width:160px;font-size:12px}
+  thead th{padding:10px 8px;font-size:10px}
+  tbody td{padding:9px 8px;font-size:12px}
+  .cell-inp{max-width:140px;font-size:12px}
+  .stats-extra{gap:8px}
 }
+
+/* ── iPhone / small phones (≤520px) ────────────────────────── */
 @media (max-width: 520px){
-  .stats{grid-template-columns:1fr}
-  .hdr-title{font-size:20px}.hdr-l{gap:10px}.hdr-r{flex-wrap:wrap}
-  .sim-bar{flex-direction:column;align-items:flex-start}
-  .sim-actions{margin-left:0}
-  .chips{gap:8px}
-  .chip{padding:8px 14px;font-size:10px}
-  .srch{width:100%;min-width:180px;padding:9px 14px;font-size:12px}
+  /* Safe area insets for notch/home bar */
+  .app{
+    padding: 10px max(12px, env(safe-area-inset-right)) 24px max(12px, env(safe-area-inset-left));
+    padding-top: max(10px, env(safe-area-inset-top));
+  }
+
+  /* Header */
+  .hdr{gap:8px;margin-bottom:12px}
+  .hdr-title{font-size:19px}
+  .hdr-l{gap:8px;align-items:baseline}
+  .hdr-r{flex-wrap:wrap;gap:8px;font-size:10px}
+  .hdr-tag{font-size:8px;padding:2px 7px}
+
+  /* Sim bar — stacked, scrollable tabs */
+  .sim-bar{flex-direction:column;align-items:stretch;gap:8px;padding:10px 12px}
+  .sim-bar-label{font-size:8px;margin-bottom:0}
+  .sim-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;padding-bottom:2px;scrollbar-width:none}
+  .sim-tabs::-webkit-scrollbar{display:none}
+  .sim-tab{flex-shrink:0;min-height:34px;padding:5px 10px;font-size:9px}
+  .sim-tab-name{max-width:90px}
+  /* Actions: 2-row wrap */
+  .sim-actions{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:5px;
+    margin-left:0;
+    width:100%
+  }
+  .sim-btn{
+    min-height:38px;
+    font-size:9px;
+    padding:6px 4px;
+    justify-content:center;
+    white-space:nowrap
+  }
+
+  /* Stats: 2 columns on phone */
+  .stats{grid-template-columns:repeat(2,1fr);gap:8px}
+  .sc{padding:10px 11px}
+  .sc-val{font-size:19px;letter-spacing:-.5px}
+  .sc-label{font-size:8px;letter-spacing:1px;margin-bottom:5px}
+  .sc-sub{font-size:8px}
+  .sc-toggle{gap:3px;margin-top:5px;flex-wrap:wrap}
+  .sc-toggle-btn{padding:3px 8px;font-size:7px;min-height:26px;touch-action:manipulation}
+
+  /* Stats extra row */
+  .stats-extra{grid-template-columns:repeat(2,1fr);gap:8px}
+
+  /* Chips / filters */
+  .chips{gap:6px;padding:8px 10px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex-shrink:0;padding:6px 12px;font-size:9px;min-height:32px;touch-action:manipulation}
+
+  /* Search */
+  .srch{width:100%;min-width:0;padding:8px 12px;font-size:13px;border-radius:6px}
   .srch:focus{width:100%}
-  .rc{width:100%;margin-left:0}.leg{gap:10px}
+
+  /* Table controls row */
+  .rc{width:100%;margin-left:0;flex-wrap:wrap;gap:6px}
+  .leg{gap:8px;flex-wrap:wrap}
+
+  /* Table */
+  thead th{padding:8px 6px;font-size:9px;white-space:nowrap}
+  tbody td{padding:8px 6px;font-size:11px}
+  .cell-inp{max-width:100px;font-size:11px}
+  .tw{-webkit-overflow-scrolling:touch}
+
+  /* Charts — let canvas resize cleanly */
+  .chart-panel{padding:0 0 8px}
+  .chart-title{font-size:10px;padding:10px 12px 4px}
+  canvas{max-width:100%;display:block}
+
+  /* Compare header */
+  .cmp-header{padding:8px 12px}
+  .cmp-badge{font-size:8px;padding:2px 8px}
+
+  /* Modals — full screen on iPhone */
+  .modal-overlay{align-items:flex-end;padding:0}
+  .modal{
+    border-radius:16px 16px 0 0;
+    max-width:100%!important;
+    width:100%;
+    padding:20px 16px max(20px,env(safe-area-inset-bottom)) 16px;
+    max-height:90vh;
+    overflow-y:auto
+  }
+  .modal-submit,.modal-cancel{min-height:44px;font-size:12px}
+  .mf-inp{font-size:16px} /* prevents iOS zoom on input focus */
+}
+
+/* ── Very small (≤380px, iPhone SE) ────────────────────────── */
+@media(max-width:380px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .sim-actions{grid-template-columns:repeat(3,1fr)}
+  .sc-val{font-size:17px}
 }
 </style>
 </head>
@@ -399,12 +502,12 @@ button,input{ -webkit-tap-highlight-color: transparent; }
   </div>
 
   <!-- SECTOR + MCAP CHARTS -->
-  <div class="chart-row-extra">
-    <div class="chart-panel">
+  <div class="chart-row-extra" id="extraChartsRow">
+    <div class="chart-panel" id="sectorChartPanel">
       <div class="chart-title">Sector Allocation <span class="chart-sub" style="font-size:9px;color:var(--dim);font-family:var(--fs)">by position value</span></div>
       <div style="padding:4px 12px 12px"><canvas id="cSector"></canvas></div>
     </div>
-    <div class="chart-panel">
+    <div class="chart-panel" id="mcapChartPanel">
       <div class="chart-title">Market Cap Mix <span class="chart-sub" style="font-size:9px;color:var(--dim);font-family:var(--fs)">by position value</span></div>
       <div style="padding:4px 12px 12px"><canvas id="cMcap"></canvas></div>
     </div>
@@ -785,7 +888,14 @@ async function toggleCmpSlot(sheetName){
     try{
       const payload = await loadSheetTab(sheetName);
       if(payload&&payload.ok){
-        cmpDataCache[sheetName] = parsePayloadToRaw(payload);
+        const raw = parsePayloadToRaw(payload);
+        const tickers = [...new Set(raw.map(r=>r.t).filter(Boolean))];
+        await fetchFundamentalsForTickers(tickers).catch(()=>{});
+        cmpDataCache[sheetName] = raw.map(r=>{
+          const f=window._fundCache[r.t];
+          if(!f) return r;
+          return {...r, sector:r.sector||f.sector, mcap:r.mcap||f.mcap, beta:r.beta!=null?r.beta:f.beta};
+        });
       }
     } catch(e){ console.warn('Compare fetch failed for '+sheetName, e); }
   }
@@ -1350,6 +1460,79 @@ function updateLiveMeta(note){
   el.innerHTML=`${iso} &nbsp;·&nbsp; ${ROWS.length} positions${note?` &nbsp;·&nbsp; ${note}`:''}`;
 }
 
+
+// ═══════════════════════════════════════════════════════════════
+// FUNDAMENTALS CACHE (Sector, Market Cap, Beta)
+// Fetched once per session from Yahoo Finance via allorigins proxy
+// Cache: window._fundCache = { AAPL: {sector, mcap, beta}, ... }
+// ═══════════════════════════════════════════════════════════════
+window._fundCache = window._fundCache || {};
+window._fundPending = false;
+
+const MCAP_BUCKETS = v => {
+  if(v==null) return 'Unknown';
+  if(v >= 200e9) return 'Mega';
+  if(v >= 10e9)  return 'Large';
+  if(v >= 2e9)   return 'Mid';
+  return 'Small';
+};
+
+async function fetchFundamentalsForTickers(tickers){
+  const missing = tickers.filter(t => !window._fundCache[t]);
+  if(!missing.length) return;
+  // Fetch in batches of 8 to avoid URL length limits
+  const BATCH = 8;
+  for(let i=0; i<missing.length; i+=BATCH){
+    const chunk = missing.slice(i, i+BATCH);
+    await Promise.allSettled(chunk.map(t => fetchOneFundamental(t)));
+  }
+}
+
+async function fetchOneFundamental(ticker){
+  if(window._fundCache[ticker]) return;
+  try{
+    // Yahoo Finance quoteSummary via allorigins CORS proxy
+    const yUrl = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(ticker)}?modules=summaryDetail%2CassetProfile%2CdefaultKeyStatistics`;
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(yUrl)}`;
+    const res  = await fetch(proxyUrl, {signal: AbortSignal.timeout(8000)});
+    if(!res.ok) throw new Error('proxy '+res.status);
+    const outer = await res.json();
+    const data  = JSON.parse(outer.contents || '{}');
+    const result = data?.quoteSummary?.result?.[0];
+    if(!result) throw new Error('no result');
+    const profile = result.assetProfile         || {};
+    const stats   = result.defaultKeyStatistics || {};
+    const detail  = result.summaryDetail        || {};
+    const beta    = detail.beta?.raw   ?? stats.beta?.raw   ?? null;
+    const mcapRaw = detail.marketCap?.raw ?? null;
+    window._fundCache[ticker] = {
+      sector: String(profile.sector || profile.industry || '').trim() || 'Unknown',
+      mcap:   MCAP_BUCKETS(mcapRaw),
+      beta:   beta != null ? Math.round(beta*100)/100 : null
+    };
+  } catch(e){
+    // Fallback: mark as attempted so we don't retry every render
+    window._fundCache[ticker] = window._fundCache[ticker] || { sector:'Unknown', mcap:'Unknown', beta:null, _failed:true };
+    console.warn('Fundamentals fetch failed for', ticker, e.message||e);
+  }
+}
+
+// Enrich RAW rows with cached fundamentals (called after fetch completes)
+function enrichRawWithFundamentals(){
+  RAW = RAW.map(r => {
+    const f = window._fundCache[r.t];
+    if(!f) return r;
+    return {
+      ...r,
+      sector: r.sector || f.sector,
+      mcap:   r.mcap   || f.mcap,
+      beta:   r.beta   != null ? r.beta : f.beta
+    };
+  });
+  ROWS = buildRows(RAW);
+  renderAll();
+}
+
 // Process a payload into the active view
 function processPayload(payload, sheetName){
   const raw=parsePayloadToRaw(payload);
@@ -1367,6 +1550,11 @@ function processPayload(payload, sheetName){
     attachBarClick('cYTD',ytdHitAreas,SEL.ytd,'clearYTD');
     attachSliceClick('cDonut',donutHitAreas,'donut','clearDonut');
   });
+  // Fetch fundamentals async — re-render charts/cards when done
+  const tickers = [...new Set(RAW.map(r=>r.t).filter(Boolean))];
+  fetchFundamentalsForTickers(tickers).then(()=>{
+    enrichRawWithFundamentals();
+  }).catch(()=>{});
 }
 
 // Load Master sheet (JSONP, same as V1)
@@ -1473,46 +1661,122 @@ function getSorted(){ return getFiltered().sort((a,b)=>{ const av=a[sortKey],bv=
 // ═══════════════════════════════════════════════
 function renderStats(){
   const rows=getFiltered();
-  const totalVal=rows.reduce((s,r)=>s+r.pv,0);
-  const totalPt=rows.reduce((s,r)=>s+(r.pt||0),0);
-  const annRows=rows.filter(r=>r.ann);
-  const avgAnn=annRows.length?annRows.reduce((s,r)=>s+r.ann,0)/annRows.length:0;
-  const annPrem=Math.round(annRows.reduce((s,r)=>s+r.ann*r.pv,0));
-  const upCnt=rows.filter(r=>r.ytd>0).length;
-  const wDte=calcWeightedAvgDte(rows);
-  const cards=[
-    {label:'Portfolio Value',val:'$'+(totalVal/1000).toFixed(1)+'k',sub:rows.length+' positions',a:'--blue'},
-    {label:'Expected Premium',val:'$'+totalPt.toLocaleString(),sub:'upfront',a:'--green'},
-    {label:'Ann Projected',val:'$'+annPrem.toLocaleString(),sub:'at current rates',a:'--violet'},
-    {label:'Avg Ann Return',val:(avgAnn*100).toFixed(1)+'%',sub:'simple avg',a:'--cyan'},
-    {label:'Wt Avg DTE',val:wDte!==null?wDte.toFixed(1)+'d':'—',sub:'weighted by premium',a:'--yellow'},
+
+  // ── Raw computations ─────────────────────────────────────────
+  const totalVal  = rows.reduce((s,r)=>s+r.pv,0);
+  const totalPt   = rows.reduce((s,r)=>s+(r.pt||0),0);
+  const annRows   = rows.filter(r=>r.ann&&r.pv>0);
+
+  // Ann Return: simple avg AND value-weighted avg
+  const avgAnnSimple = annRows.length ? annRows.reduce((s,r)=>s+r.ann,0)/annRows.length : 0;
+  const avgAnnWt     = annRows.length ? annRows.reduce((s,r)=>s+r.ann*r.pv,0)/annRows.reduce((s,r)=>s+r.pv,0) : 0;
+
+  // Ann Projected: by position value (projected annual premium $ from each position)
+  const annPremPv  = Math.round(annRows.reduce((s,r)=>s+(r.ann||0)*r.pv,0));
+  // Ann Projected: by premium (annualise the actual collected premium using each position's DTE)
+  const annPremPt  = Math.round(rows.filter(r=>r.dte>0&&(r.pt||0)>0).reduce((s,r)=>s+(r.pt||0)*365/r.dte,0));
+
+  // OTM%: wt by position value AND by premium
+  const otmRowsPv  = rows.filter(r=>r.otm!=null&&r.pv>0);
+  const wtOtmPv    = otmRowsPv.length ? otmRowsPv.reduce((s,r)=>s+r.otm*r.pv,0)/otmRowsPv.reduce((s,r)=>s+r.pv,0) : null;
+  const otmRowsPt  = rows.filter(r=>r.otm!=null&&(r.pt||0)>0);
+  const wtOtmPt    = otmRowsPt.length ? otmRowsPt.reduce((s,r)=>s+r.otm*(r.pt||0),0)/otmRowsPt.reduce((s,r)=>s+(r.pt||0),0) : null;
+
+  // Beta: wt by position value AND by premium
+  const betaRowsPv = rows.filter(r=>r.beta!=null&&r.pv>0);
+  const wtBetaPv   = betaRowsPv.length ? betaRowsPv.reduce((s,r)=>s+r.beta*r.pv,0)/betaRowsPv.reduce((s,r)=>s+r.pv,0) : null;
+  const betaRowsPt = rows.filter(r=>r.beta!=null&&(r.pt||0)>0);
+  const wtBetaPt   = betaRowsPt.length ? betaRowsPt.reduce((s,r)=>s+r.beta*(r.pt||0),0)/betaRowsPt.reduce((s,r)=>s+(r.pt||0),0) : null;
+
+  // DTE: wt by position value AND by premium
+  const dteRowsPv = rows.filter(r=>r.dte!=null&&r.pv>0);
+  const wtDtePv   = dteRowsPv.length ? dteRowsPv.reduce((s,r)=>s+r.dte*r.pv,0)/dteRowsPv.reduce((s,r)=>s+r.pv,0) : null;
+  const dteRowsPt = rows.filter(r=>r.dte!=null&&(r.pt||0)>0);
+  const wtDtePt   = dteRowsPt.length ? dteRowsPt.reduce((s,r)=>s+r.dte*(r.pt||0),0)/dteRowsPt.reduce((s,r)=>s+(r.pt||0),0) : null;
+
+  // Stash all values for toggle re-render (no recompute needed)
+  window._sv = {
+    totalVal, totalPt, annPremPv, annPremPt,
+    avgAnnSimple, avgAnnWt,
+    wtOtmPv, wtOtmPt,
+    wtBetaPv, wtBetaPt,
+    wtDtePv, wtDtePt,
+    posCount: rows.length
+  };
+
+  renderAllCards();
+}
+
+// Toggle modes — persist across filter changes
+window._tm = window._tm || { ann:'simple', annProj:'pv', otm:'pv', beta:'pv', dte:'pt' };
+
+function renderAllCards(){
+  const v = window._sv || {};
+  const m = window._tm;
+
+  // ── Row 1: static cards + toggled Avg Ann Return ────────────
+  const annVal     = m.ann==='simple' ? (v.avgAnnSimple||0) : (v.avgAnnWt||0);
+  const annProjVal = m.annProj==='pv'  ? v.annPremPv        : v.annPremPt;
+
+  const staticCards = [
+    { label:'Portfolio Value',  val:'$'+(v.totalVal/1000).toFixed(1)+'k', sub:v.posCount+' positions', a:'--blue',   id:null },
+    { label:'Expected Premium', val:'$'+(v.totalPt||0).toLocaleString(),   sub:'upfront',               a:'--green',  id:null },
   ];
-  document.getElementById('stats').innerHTML=cards.map(c=>
-    `<div class="sc" style="--a:var(${c.a})">
-      <div class="sc-label">${c.label}</div>
-      <div class="sc-val">${c.val}</div>
-      <div class="sc-sub">${c.sub}</div>
-    </div>`
-  ).join('');
-  // Extra summary row: Wt Avg Beta + Wt Avg DTE (both by position value)
-  const pvTot=rows.reduce((s,r)=>s+(r.pv||0),0);
-  const betaRows=rows.filter(r=>r.beta!=null&&r.pv>0);
-  const wtBeta=betaRows.length?betaRows.reduce((s,r)=>s+r.beta*r.pv,0)/betaRows.reduce((s,r)=>s+r.pv,0):null;
-  const dteRows=rows.filter(r=>r.dte!=null&&r.pv>0);
-  const wtDtePv=dteRows.length?dteRows.reduce((s,r)=>s+r.dte*r.pv,0)/dteRows.reduce((s,r)=>s+r.pv,0):null;
-  const extraCards=[
-    {label:'Wt Avg Beta',val:wtBeta!=null?wtBeta.toFixed(2):'—',sub:'by position value',a:'--orange'},
-    {label:'Wt Avg DTE (PV)',val:wtDtePv!=null?Math.round(wtDtePv)+' d':'—',sub:'by position value',a:'--cyan'},
+
+  const toggleCards = [
+    { id:'annProj', label:'Ann Projected',  a:'--violet',
+      vals:{ pv:'$'+(v.annPremPv||0).toLocaleString(), pt:'$'+(v.annPremPt||0).toLocaleString() },
+      subs:{ pv:'wt by position value',                pt:'wt by premium' },
+      mode: m.annProj, opts:[{k:'pv',l:'Pos Value'},{k:'pt',l:'Premium'}] },
+    { id:'ann',     label:'Avg Ann Return', a:'--cyan',
+      vals:{ simple:((v.avgAnnSimple||0)*100).toFixed(1)+'%', wt:((v.avgAnnWt||0)*100).toFixed(1)+'%' },
+      subs:{ simple:'simple average',                          wt:'wt by position value' },
+      mode: m.ann,    opts:[{k:'simple',l:'Simple'},{k:'wt',l:'Wt Avg'}] },
+    { id:'otm',     label:'Wt Avg OTM%',   a:'--yellow',
+      vals:{ pv: v.wtOtmPv!=null?((v.wtOtmPv||0)*100).toFixed(1)+'%':'—',
+             pt: v.wtOtmPt!=null?((v.wtOtmPt||0)*100).toFixed(1)+'%':'—' },
+      subs:{ pv:'wt by position value', pt:'wt by premium' },
+      mode: m.otm,    opts:[{k:'pv',l:'Pos Value'},{k:'pt',l:'Premium'}] },
+    { id:'beta',    label:'Wt Avg Beta',   a:'--orange',
+      vals:{ pv: v.wtBetaPv!=null?(v.wtBetaPv||0).toFixed(2):'—',
+             pt: v.wtBetaPt!=null?(v.wtBetaPt||0).toFixed(2):'—' },
+      subs:{ pv:'wt by position value', pt:'wt by premium' },
+      mode: m.beta,   opts:[{k:'pv',l:'Pos Value'},{k:'pt',l:'Premium'}] },
+    { id:'dte',     label:'Avg DTE',        a:'--yellow',
+      vals:{ pv: v.wtDtePv!=null?Math.round(v.wtDtePv)+' d':'—',
+             pt: v.wtDtePt!=null?Math.round(v.wtDtePt)+' d':'—' },
+      subs:{ pv:'wt by position value', pt:'wt by premium' },
+      mode: m.dte,    opts:[{k:'pv',l:'Pos Value'},{k:'pt',l:'Premium'}] },
   ];
-  let eRow=document.getElementById('statsExtra');
-  if(!eRow){eRow=document.createElement('div');eRow.id='statsExtra';eRow.className='stats-extra';document.getElementById('stats').parentElement.insertBefore(eRow,document.getElementById('stats').nextSibling);}
-  eRow.innerHTML=extraCards.map(c=>
-    `<div class="sc sc-sm" style="--a:var(${c.a})">
-      <div class="sc-label">${c.label}</div>
-      <div class="sc-val">${c.val}</div>
-      <div class="sc-sub">${c.sub}</div>
-    </div>`
-  ).join('');
+
+  // Render static cards
+  const statsEl = document.getElementById('stats');
+  statsEl.innerHTML = [
+    ...staticCards.map(c=>`
+      <div class="sc" style="--a:var(${c.a})">
+        <div class="sc-label">${c.label}</div>
+        <div class="sc-val">${c.val}</div>
+        <div class="sc-sub">${c.sub}</div>
+      </div>`),
+    ...toggleCards.map(c=>`
+      <div class="sc" style="--a:var(${c.a})">
+        <div class="sc-label">${c.label}</div>
+        <div class="sc-val">${c.vals[c.mode]}</div>
+        <div class="sc-sub">${c.subs[c.mode]}</div>
+        <div class="sc-toggle">
+          ${c.opts.map(o=>`<button class="sc-toggle-btn${c.mode===o.k?' active':''}" onclick="setCardMode('${c.id}','${o.k}');event.stopPropagation()">${o.l}</button>`).join('')}
+        </div>
+      </div>`)
+  ].join('');
+
+  // Remove old extra row (DTE is gone)
+  const eRow = document.getElementById('statsExtra');
+  if(eRow) eRow.remove();
+}
+
+function setCardMode(card, mode){
+  window._tm[card] = mode;
+  renderAllCards();
 }
 
 // ═══════════════════════════════════════════════
@@ -1714,13 +1978,85 @@ function drawOTM(){
   ctx.fillText('OTM % →',PAD.l+cW/2,H-2);
   ctx.save();ctx.translate(10,PAD.t+cH/2);ctx.rotate(-Math.PI/2);
   ctx.fillText('Ann % ↑',0,0);ctx.restore();
-  rows.forEach(r=>{
-    const x=PAD.l+(r.otm/maxOTM)*cW; const y=PAD.t+cH-(r.ann/maxAnn)*cH;
+  // First pass: compute dot positions and sizes
+  const dots = rows.map(r=>{
+    const x=PAD.l+(r.otm/maxOTM)*cW;
+    const y=PAD.t+cH-(r.ann/maxAnn)*cH;
     const clr=r.ann>0.5?c.green:r.ann>0.25?c.lime:r.ann>0.10?c.yellow:c.orange;
-    const rad=Math.max(4,Math.min(12,(r.pt||30)/28));
-    ctx.beginPath();ctx.arc(Math.round(x),Math.round(y),rad,0,Math.PI*2);
-    ctx.fillStyle=clr;ctx.fill(); ctx.strokeStyle=clr+'55';ctx.lineWidth=1;ctx.stroke();
-    if(rad>=5){ ctx.fillStyle=c.text;ctx.font='600 7px IBM Plex Mono,monospace';ctx.textAlign='center'; ctx.fillText(r.t,Math.round(x),Math.round(y)-rad-2); }
+    const rad=Math.max(4,Math.min(10,(r.pt||30)/30));
+    return {x:Math.round(x),y:Math.round(y),clr,rad,t:r.t};
+  });
+
+  // Draw dots first
+  dots.forEach(d=>{
+    ctx.beginPath();ctx.arc(d.x,d.y,d.rad,0,Math.PI*2);
+    ctx.fillStyle=d.clr;ctx.fill();
+    ctx.strokeStyle=d.clr+'44';ctx.lineWidth=1;ctx.stroke();
+  });
+
+  // Second pass: smart label placement with collision avoidance
+  ctx.font='600 7px IBM Plex Mono,monospace';
+  const labelH=8, labelPad=2;
+  const placed=[]; // [{x1,y1,x2,y2}] bounding boxes of placed labels
+
+  // Try 8 candidate positions around each dot, pick first that doesn't collide
+  const offsets=[
+    {dx:0,   dy:-1, ax:'center', ay:'bottom'}, // above (preferred)
+    {dx:1,   dy:-1, ax:'left',   ay:'bottom'}, // above-right
+    {dx:-1,  dy:-1, ax:'right',  ay:'bottom'}, // above-left
+    {dx:1,   dy:0,  ax:'left',   ay:'middle'}, // right
+    {dx:-1,  dy:0,  ax:'right',  ay:'middle'}, // left
+    {dx:0,   dy:1,  ax:'center', ay:'top'},    // below
+    {dx:1,   dy:1,  ax:'left',   ay:'top'},    // below-right
+    {dx:-1,  dy:1,  ax:'right',  ay:'top'},    // below-left
+  ];
+
+  function overlaps(bx1,by1,bx2,by2){
+    return placed.some(p=>!(bx2<p.x1||bx1>p.x2||by2<p.y1||by1>p.y2));
+  }
+  function clampInChart(bx1,bx2,by1,by2){
+    return bx1>=PAD.l && bx2<=PAD.l+cW && by1>=PAD.t && by2<=PAD.t+cH+16;
+  }
+
+  dots.forEach(d=>{
+    const tw=ctx.measureText(d.t).width;
+    const dist=d.rad+labelPad+2;
+    for(const o of offsets){
+      let lx,ly;
+      if(o.dx===0)       lx=d.x;
+      else if(o.dx===1)  lx=d.x+dist;
+      else               lx=d.x-dist;
+
+      if(o.dy===-1) ly=d.y-dist;
+      else if(o.dy===0) ly=d.y+3;
+      else              ly=d.y+dist+labelH;
+
+      // Bounding box of label
+      let bx1,bx2;
+      if(o.ax==='center'){ bx1=lx-tw/2; bx2=lx+tw/2; }
+      else if(o.ax==='left'){ bx1=lx; bx2=lx+tw; }
+      else { bx1=lx-tw; bx2=lx; }
+      const by1=ly-labelH, by2=ly+2;
+
+      if(!overlaps(bx1-1,by1-1,bx2+1,by2+1) && clampInChart(bx1,bx2,by1,by2)){
+        // Draw subtle leader line if label is far from dot
+        const cx2=o.ax==='center'?lx:o.ax==='left'?bx1:bx2;
+        const lineDist=Math.hypot(cx2-d.x,(ly-4)-d.y);
+        if(lineDist>d.rad+8){
+          ctx.strokeStyle=d.clr+'55';ctx.lineWidth=.6;ctx.setLineDash([2,3]);
+          ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(cx2,(ly-4));ctx.stroke();ctx.setLineDash([]);
+        }
+        // Draw label
+        ctx.fillStyle=c.text;ctx.textAlign=o.ax==='middle'?'center':o.ax;
+        ctx.fillText(d.t, lx, ly);
+        placed.push({x1:bx1-1,y1:by1-1,x2:bx2+1,y2:by2+1});
+        return;
+      }
+    }
+    // All positions collide — draw label directly on dot in contrasting color (last resort)
+    ctx.fillStyle='#000';ctx.textAlign='center';
+    ctx.fillText(d.t,d.x,d.y+3);
+    placed.push({x1:d.x-tw/2,y1:d.y-4,x2:d.x+tw/2,y2:d.y+6});
   });
 }
 
@@ -1974,13 +2310,30 @@ async function confirmDelete(){
 // ═══════════════════════════════════════════════
 // SECTOR DONUT CHART
 // ═══════════════════════════════════════════════
+
+// Hide entire extra charts row if both panels have no data
+function updateExtraChartsRow(){
+  const row = document.getElementById('extraChartsRow');
+  if(!row) return;
+  const sHidden = document.getElementById('sectorChartPanel')?.style.display === 'none';
+  const mHidden = document.getElementById('mcapChartPanel')?.style.display  === 'none';
+  row.style.display = (sHidden && mHidden) ? 'none' : '';
+  // If one is hidden, make the other full width
+  if(sHidden && !mHidden) row.style.gridTemplateColumns = '1fr';
+  else if(mHidden && !sHidden) row.style.gridTemplateColumns = '1fr';
+  else row.style.gridTemplateColumns = '';
+}
+
 function drawSector(){
-  const rows=getFiltered().filter(r=>r.sector&&r.pv>0);
-  const W=Math.max(280,( document.getElementById('cSector')?.parentElement?.clientWidth||280)-24);
+  const rows=getFiltered().filter(r=>r.sector&&r.sector!=='Unknown'&&r.pv>0);
+  const panel=document.getElementById('sectorChartPanel');
+  if(!rows.length){ if(panel) panel.style.display='none'; updateExtraChartsRow(); return; }
+  if(panel) panel.style.display='';
+  updateExtraChartsRow();
+  const W=Math.max(280,(document.getElementById('cSector')?.parentElement?.clientWidth||280)-24);
   const H=180;
   const{ctx}=setupCanvas('cSector',W,H);
   const c=C();
-  if(!rows.length){ctx.fillStyle=c.dim;ctx.font='600 11px var(--fs)';ctx.textAlign='center';ctx.fillText('No sector data',W/2,H/2);return;}
 
   // Aggregate by sector (by position value)
   const map=new Map();
@@ -2022,12 +2375,15 @@ function drawSector(){
 // MARKET CAP DONUT CHART
 // ═══════════════════════════════════════════════
 function drawMcap(){
-  const rows=getFiltered().filter(r=>r.mcap&&r.pv>0);
+  const rows=getFiltered().filter(r=>r.mcap&&r.mcap!=='Unknown'&&r.pv>0);
+  const panel=document.getElementById('mcapChartPanel');
+  if(!rows.length){ if(panel) panel.style.display='none'; updateExtraChartsRow(); return; }
+  if(panel) panel.style.display='';
+  updateExtraChartsRow();
   const W=Math.max(280,(document.getElementById('cMcap')?.parentElement?.clientWidth||280)-24);
   const H=180;
   const{ctx}=setupCanvas('cMcap',W,H);
   const c=C();
-  if(!rows.length){ctx.fillStyle=c.dim;ctx.font='600 11px var(--fs)';ctx.textAlign='center';ctx.fillText('No market cap data',W/2,H/2);return;}
 
   // Bucket order + colors
   const ORDER=['Mega','Large','Mid','Small','Unknown'];
